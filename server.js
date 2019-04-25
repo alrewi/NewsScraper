@@ -19,13 +19,14 @@ app.use(express.static("public"));
 //CORRECT THIS?
 mongoose.connect("mongodb://localhost/onionScraperDB", { useNewUrlParser: true });
 
-
+//.headline for the headline of the article
+//document.querySelectorAll(".js_entry-link")
 app.get("/scrape", function(req, res) {
   axios.get("https://local.theonion.com/").then(function(response) {
     var $ = cheerio.load(response.data);
     var result = {};
     //Figure out how to grab the right pieces from the response
-    $(".headline").each(function(i, element) {
+    $("h1.headline").each(function(i, element) {
       result.title = $(this)
         .children("a")
         .text();
