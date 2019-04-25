@@ -60,8 +60,14 @@ app.get("/articles", function(req, res) {
 app.get("/articles/:id", function(req, res) {
   db.Article.findOne({_id: req.params.id})
   .populate("comments")
-  .then(function(dbArticle){
-    res.json(dbArticle);
+  .then(function(data){
+    var results = {
+      article: data,
+      comment: data.comments
+    }
+    //would render an article.handlebars if I wrote one
+    // res.render("article", results);
+    res.json(data);
   })
   .catch(function(err){
     res.json(err);
