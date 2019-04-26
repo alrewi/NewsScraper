@@ -6,31 +6,34 @@ var cheerio = require("cheerio");
 
 var db = require("./models");
 
-var PORT = process.env.PORT || 3000;
+// var PORT = process.env.PORT || 3000;
+var PORT = 3000;
 
 var app = express();
 
 app.use(logger("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static("public"));
+app.use(express.static(__dirname + '/public'));
 
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/onionScraperDB";
 
-mongoose.connect(MONGODB_URI);
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
-var expressHandlebars = require('express-handlebars');
-app.engine('handlebars', expressHandlebars({
-    defaultLayout: 'main'
-}));
-app.set('view engine', 'handlebars');
+var path = require('path');
 
-app.get('/', function(req, res){
-	res.render('index');
+// var router = express.Router();
+
+app.get('/', function (req, res) {
+  res.sendFile(path.join(__dirname, '..', '/public/index.html'));
 });
 
+// app.get('/', function(req, res){
+// 	res.render('index');
+// });
+
 //.headline for the headline of the article
-//document.querySelectorAll(".js_entry-link")
+//document.querySelectorAll(".headline")
 app.get("/scrape", function(req, res) {
   axios.get("https://local.theonion.com/").then(function(response) {
     var $ = cheerio.load(response.data);
