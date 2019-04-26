@@ -3,13 +3,18 @@ $.getJSON("/articles", function(data) {
 
     for (var i = 0; i < data.length; i++) {
       // Find the right div and the correct path to the id, title, link in the response object
-      $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
+      var article = $('<div class="article"></div>');
+      $(article).append("<h4 data-id='" + data[i]._id + "'>" + data[i].title + "</h4>");
+      $(article).append("<a data-id='" + data[i]._id + "' class='btn btn-primary newComment'>Add a New Comment</a>");
+      $(article).append("<a data-id='" + data[i]._id + "' class='btn btn-primary'>View All Comments</a>");
+      $(article).append("<a href='" + data[i].link + "' target='_blank' class='btn btn-primary'>View Article</a>");
+      $("#articles").append(article);
     }
   });
   
   
-  // Whenever someone clicks a p tag
-  $(document).on("click", "p", function() {
+  // Whenever someone clicks an a tag
+  $(document).on("click", "a.newComment", function() {
     var thisId = $(this).attr("data-id");
   
     // Now make an ajax call for the Article
@@ -20,15 +25,16 @@ $.getJSON("/articles", function(data) {
       // With that done, add the comment information to the page
       .then(function(data) {
         console.log(data);
+        
         $("#comments").empty();
         // The title of the article
-        $("#comments").append("<h2>" + data.title + "</h2>");
+        $("#comments").append("<h5>" + data.title + "</h5>");
         // An input to enter a new comment title
-        $("#comments").append("<input id='titleinput' name='title' placeholder='Comment Title'>");
+        $("#comments").append("<input id='titleinput' class='form-control' name='title' placeholder='Comment Title'>");
         // A textarea to add a new comment body
-        $("#comments").append("<textarea id='bodyinput' name='body' placeholder='Your Comment'></textarea>");
+        $("#comments").append("<textarea id='bodyinput' class='form-control' name='body' placeholder='Your Comment'></textarea>");
         // A button to submit a new comment, with the id of the article saved to it
-        $("#comments").append("<button data-id='" + data._id + "' id='savecomment'>Save Comment</button>");
+        $("#comments").append("<button data-id='" + data._id + "' id='savecomment' class='btn btn-primary'>Save Comment</button>");
   
         // If there's a note in the article
         if (data.comments) {
