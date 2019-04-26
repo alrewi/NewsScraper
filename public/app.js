@@ -28,7 +28,7 @@ $.getJSON("/articles", function(data) {
         
         $("#comments").empty();
         // The title of the article
-        $("#comments").append("<h5>" + data.title + "</h5>");
+        $("#comments").append("<h5> Add a new comment: <br><h6>" + data.title + "</h6></h5>");
         // An input to enter a new comment title
         $("#comments").append("<input id='titleinput' class='form-control' name='title' placeholder='Comment Title'>");
         // A textarea to add a new comment body
@@ -48,7 +48,6 @@ $.getJSON("/articles", function(data) {
   
   // When you click the savecomment button
 
-  //NEED TO MAKE SURE WE'RE ADDING ANOTHER COMMENT, NOT REPLACING LIKE IN THE CLASS EXAMPLE!!!!
   $(document).on("click", "#savecomment", function() {
     // Grab the id associated with the article from the submit button
     var thisId = $(this).attr("data-id");
@@ -76,4 +75,6 @@ $.getJSON("/articles", function(data) {
     $("#titleinput").val("");
     $("#bodyinput").val("");
   });
+
+  
   

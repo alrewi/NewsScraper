@@ -56,7 +56,6 @@ app.get("/articles", function(req, res) {
     });
 });
 
-//Check the comments model to make sure this works
 app.get("/articles/:id", function(req, res) {
   db.Article.findOne({_id: req.params.id})
   .populate("comments")
@@ -74,7 +73,6 @@ app.get("/articles/:id", function(req, res) {
   });
 });
 
-//Check the comments model to make sure this works
 app.post("/articles/:id", function(req, res) {
   db.Comment.create(req.body)
     .then(function(dbComment) {
@@ -95,6 +93,36 @@ app.post("/articles/:id", function(req, res) {
       res.json(err);
     });
 });
+
+app.delete("/comments/:commentid/:articleid", function (req, res) {
+  console.log("removing a comment...");
+
+  db.Article.update({
+      _id: req.params.articleid
+    }, {
+      $pull: {
+        comments: req.params.commentid
+      }
+    },
+    function (error, deleted) {
+      // Show any errors
+      if (error) {
+        console.log(error);
+        res.send(error);
+      } else {
+        console.log("comment removed from article");
+        db.Note.findByIdAndRemove(req.params.commentid, function (err, removed) {
+          if (err)
+            res.send(err);
+          else
+            res.json({
+              removed: 'Comment Deleted!'
+            });
+
+        });
+      }
+  }); 
+}); 
 
 app.listen(PORT, function() {
   console.log("App running on port " + PORT + "!");
