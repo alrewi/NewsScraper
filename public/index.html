@@ -30,8 +30,14 @@
         padding: 5px;
       }
       #comments {
-        float: right;
-        width: 30%;
+        display: block;
+        /* width: 30%; 
+        float: right*/
+      }
+      #one-comment {
+        border: 1px solid gray;
+        padding: 5px;
+        margin-bottom: 5px;
       }
       .btn {
         color: white !important;
@@ -62,7 +68,7 @@
       <h2><i>The Only Local News Source Worth Scraping</i></h2>
       <a class="btn btn-primary btn-lg scrape-btn" href="/scrape">Scrape!</a>
       <div id="articles"></div>
-      <div id="comments" class="form-group"></div>
+      
     </div>
   </body>
 </html>

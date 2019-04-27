@@ -1,6 +1,10 @@
+//Heroku crashing after a minute
+//Appending articles from articles endpoint instead of from db? Is this correct? How do I stop putting articles in /articles if so?
+//Delete comments
+//View all comments
+
 $( window ).on( "load", function() { 
-  $("#articles").empty();
-  //create article div here?
+  // $("#articles").empty();
 
   $(document).on("click", "a.scrape-btn", function(){
     $.getJSON("/articles", function(data) {
@@ -8,12 +12,15 @@ $( window ).on( "load", function() {
       for (var i = 0; i < data.length; i++) {
         // Find the right div and the correct path to the id, title, link in the response object
         
-        //move this variable declaration outside the function
         var article = $('<div class="article"></div>');
+        var comments = $('<div id="comments"></div>');
+        var viewComments = $('<div id="comment-view"></div>');
         $(article).append("<h4 data-id='" + data[i]._id + "'>" + data[i].title + "</h4>");
         $(article).append("<a data-id='" + data[i]._id + "' class='btn btn-primary newComment'>Add a New Comment</a>");
         $(article).append("<a data-id='" + data[i]._id + "' id='viewcomments' class='btn btn-primary'>View All Comments</a>");
         $(article).append("<a href='" + data[i].link + "' target='_blank' class='btn btn-primary'>View Article</a>");
+        $(article).append(comments);
+        $(article).append(viewComments);
         $("#articles").append(article);
       }
     });
@@ -22,6 +29,7 @@ $( window ).on( "load", function() {
   // Whenever someone clicks an a tag
   $(document).on("click", "a.newComment", function() {
     var thisId = $(this).attr("data-id");
+    $("#comments").show();
 
     // Now make an ajax call for the Article
     $.ajax({
@@ -30,12 +38,8 @@ $( window ).on( "load", function() {
     })
       // With that done, add the comment information to the page
       .then(function(data) {
-        console.log("data:" + data);
-        console.log("data.comments:" + data.comments)
-        
         $("#comments").empty();
-        // The title of the article
-        $("#comments").append("<h5> Add a new comment: <br><h6>" + data.title + "</h6></h5>");
+        $("#comments").append("<h6>Add a new comment:</h6>");
         // An input to enter a new comment title
         $("#comments").append("<input id='titleinput' class='form-control' name='title' placeholder='Comment Title'>");
         // A textarea to add a new comment body
@@ -57,20 +61,23 @@ $( window ).on( "load", function() {
   // When you click the savecomment button
 
   $(document).on("click", "#savecomment", function() {
-    // Grab the id associated with the article from the submit button
-    var thisId = $(this).attr("data-id");
+    if(($("#titleinput").val() || $("#bodyinput").val()) === ''){
+      alert("Please let us know what you think!");
+    } else {
+      // Grab the id associated with the article from the submit button
+      var thisId = $(this).attr("data-id");
 
-    // Run a POST request to change the note, using what's entered in the inputs
-    $.ajax({
-      method: "POST",
-      url: "/articles/" + thisId,
-      data: {
-        // Value taken from title input
-        title: $("#titleinput").val(),
-        // Value taken from note textarea
-        body: $("#bodyinput").val()
-      }
-    })
+      // Run a POST request to change the note, using what's entered in the inputs
+      $.ajax({
+        method: "POST",
+        url: "/articles/" + thisId,
+        data: {
+          // Value taken from title input
+          title: $("#titleinput").val(),
+          // Value taken from note textarea
+          body: $("#bodyinput").val()
+        }
+      })
       // With that done
       .then(function(data) {
         // Log the response
@@ -79,41 +86,41 @@ $( window ).on( "load", function() {
         $("#comments").empty();
       });
 
-    // Also, remove the values entered in the input and textarea for note entry
-    $("#titleinput").val("");
-    $("#bodyinput").val("");
+      // Also, remove the values entered in the input and textarea for note entry
+      $("#titleinput").val("");
+      $("#bodyinput").val("");
+    }
   });
 
   $(document).on("click", "#viewcomments", function() {
-    // Grab the id associated with the article from the submit button
+    $("#comments").show();
+    $("#comment-view").show();
     var thisId = $(this).attr("data-id");
-    var commentsArray = [];
     
-    // Run a POST request to change the note, using what's entered in the inputs
     $.ajax({
       method: "GET",
       url: "/articles/" + thisId,
       data: {
         // Value taken from title input
         title: $("#titleinput").val(),
-        // Value taken from note textarea
+        // Value taken from body textarea
         body: $("#bodyinput").val()
       }
     })
       // With that done
-      .then(function(data) {
-        // Log the response
-        
-        // Empty the notes section
+      .then(function(data){
+        $("#comment-view").empty();
+        $("#comment-view").append("<h5>Comments:</h5>");
         data.comments.forEach(element => { 
           console.log(element)
           //append element.body as a p tag to the article div w/ id=article?
           //when we append, we have to make sure we are appending to ONLY the article in question
-          
-      });
-      console.log(commentsArray);
-      
-      
+          var oneComment =  $('<div id="one-comment"></div>');
+          $(oneComment).append("<h6>Title:</h6>" + element.title);
+          $(oneComment).append("<h6>Comment:</h6>" + element.body);
+          $("#comment-view").append(oneComment);
+        });
+        $("#comment-view").append("<button id='noviewcomments' class='btn btn-primary'>Close</button>");
     });
 
     // Also, remove the values entered in the input and textarea for note entry
@@ -123,5 +130,9 @@ $( window ).on( "load", function() {
 
   $(document).on("click", "#nocomment", function() {
     $("#comments").empty();
+  });
+
+  $(document).on("click", "#noviewcomments", function() {
+    $("#comment-view").empty();
   });
 })
