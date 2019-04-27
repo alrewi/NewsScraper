@@ -21,6 +21,7 @@
         display: inline-block;
         overflow: auto;
         width: 60%;
+        float: left;
         /* height: 700px; */
       }
       .article {
@@ -49,13 +50,17 @@
         height: 200px;
         font-size: 18px;
       }
+      .scrape-btn {
+        display: block;
+        width: 10%;
+      }
     </style>
   </head>
   <body>
     <div id="wrapper" class="container">
       <img src="images/onion-logo.png" class="img-fluid">
       <h2><i>The Only Local News Source Worth Scraping</i></h2>
-      <a class="btn btn-primary" href="/scrape">Scrape!</a>
+      <a class="btn btn-primary btn-lg scrape-btn" href="/scrape">Scrape!</a>
       <div id="articles"></div>
       <div id="comments" class="form-group"></div>
     </div>

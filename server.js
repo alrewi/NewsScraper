@@ -7,7 +7,6 @@ var cheerio = require("cheerio");
 var db = require("./models");
 
 var PORT = process.env.PORT || 3000;
-// var PORT = 3000;
 
 var app = express();
 
@@ -22,24 +21,21 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
 
 var path = require('path');
 
-// var router = express.Router();
-
 app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, '..', '/public/index.html'));
 });
 
-// app.get('/', function(req, res){
-// 	res.render('index');
-// });
 
-//.headline for the headline of the article
-//document.querySelectorAll(".headline")
+//example: document.querySelectorAll(".headline")
 app.get("/scrape", function(req, res) {
   axios.get("https://local.theonion.com/").then(function(response) {
     
     var $ = cheerio.load(response.data);
     var result = {};
     //Figure out how to grab the right pieces from the response
+    // Don't know how to run another scrape to get article summary
+    // and image which are not in an h1.headline
+    // They are in .entry-summary and a <picture> 
     $("h1.headline").each(function(i, element) {
       result.title = $(this)
         .children("a")
@@ -48,6 +44,9 @@ app.get("/scrape", function(req, res) {
         .children("a")
         .attr("href");
 
+        
+        
+      console.log("result ---->", result);
       db.Article.create(result)
         .then(function(dbArticle) {
           console.log("DB article--->", dbArticle);
@@ -55,8 +54,12 @@ app.get("/scrape", function(req, res) {
         .catch(function(err) {
           console.log(err);
         });
+      
     });
-    res.send("Scrape complete!");
+    // Want to scrape and then redirect to home page with 
+    // scraped articles displaying, but
+    // res.redirect("/"); here takes you all the way back  
+    // no articles displaying
   });
 });
 
@@ -72,6 +75,7 @@ app.get("/articles", function(req, res) {
     });
 });
 
+//Not working
 app.get("/articles/:id", function(req, res) {
   db.Article.findOne({_id: req.params.id})
   .populate("comments")
@@ -80,8 +84,6 @@ app.get("/articles/:id", function(req, res) {
       article: data,
       comment: data.comments
     }
-    //would render an article.handlebars if I wrote one
-    // res.render("article", results);
     res.json(data);
   })
   .catch(function(err){
@@ -110,6 +112,7 @@ app.post("/articles/:id", function(req, res) {
     });
 });
 
+//Not working
 app.delete("/comments/:commentid/:articleid", function (req, res) {
   console.log("removing a comment...");
 
@@ -121,7 +124,6 @@ app.delete("/comments/:commentid/:articleid", function (req, res) {
       }
     },
     function (error, deleted) {
-      // Show any errors
       if (error) {
         console.log(error);
         res.send(error);
