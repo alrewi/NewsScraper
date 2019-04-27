@@ -1,6 +1,6 @@
 
 $.getJSON("/articles", function(data) {
-
+    //what is in data?  this is what seems to be getting rendered
     for (var i = 0; i < data.length; i++) {
       // Find the right div and the correct path to the id, title, link in the response object
       var article = $('<div class="article"></div>');
@@ -24,7 +24,7 @@ $.getJSON("/articles", function(data) {
     })
       // With that done, add the comment information to the page
       .then(function(data) {
-        console.log(data);
+        
         
         $("#comments").empty();
         // The title of the article

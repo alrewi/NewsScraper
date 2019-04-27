@@ -36,6 +36,7 @@ app.get('/', function (req, res) {
 //document.querySelectorAll(".headline")
 app.get("/scrape", function(req, res) {
   axios.get("https://local.theonion.com/").then(function(response) {
+    
     var $ = cheerio.load(response.data);
     var result = {};
     //Figure out how to grab the right pieces from the response
@@ -49,19 +50,21 @@ app.get("/scrape", function(req, res) {
 
       db.Article.create(result)
         .then(function(dbArticle) {
-          console.log(dbArticle);
+          console.log("DB article--->", dbArticle);
         })
         .catch(function(err) {
           console.log(err);
         });
     });
-    res.send("Scrape Complete");
+    res.send("Scrape complete!");
   });
 });
 
 app.get("/articles", function(req, res) {
+  
   db.Article.find({})
     .then(function(dbArticle) {
+      console.log("success!!")
       res.json(dbArticle);
     })
     .catch(function(err) {
