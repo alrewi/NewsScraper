@@ -6,7 +6,7 @@
 $( window ).on( "load", function() { 
   // $("#articles").empty();
 
-  $(document).on("click", "a.scrape-btn", function(){
+  $(document).on("click", ".scrape-btn", function(){
     $.getJSON("/articles", function(data) {
       //what is in data?  this is what seems to be getting rendered
       for (var i = 0; i < data.length; i++) {
